@@ -132,6 +132,9 @@
                 +from_client_name+' <br> '+time+'</em><div style="clear:both;">' +
                 '</div><p class="triangle-isosceles top">'+content+'</p> </div>');
         }
+//        $("#dialog").scrollTo(0,$("#dialog").scrollMaxY);
+//        $("#dialog").scrollHeight(0);
+        $("#dialog").scrollTop($("#dialog")[0].scrollHeight)
 
     }
 
