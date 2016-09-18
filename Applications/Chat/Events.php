@@ -63,7 +63,6 @@ class Events
         {
             return ;
         }
-        
         // 根据类型执行不同的业务
         switch($message_data['type'])
         {
@@ -87,8 +86,7 @@ class Events
                 $_SESSION['room_id'] = $room_id;
                 $_SESSION['client_name'] = $client_name;
                 $_SESSION['client_photo'] = $client_photo;
-
-                // 获取房间内所有用户列表 
+                // 获取房间内所有用户列表
                 $clients_list = Gateway::getClientSessionsByGroup($room_id);
                 foreach($clients_list as $tmp_client_id=>$item)
                 {
@@ -108,7 +106,7 @@ class Events
                 
             // 客户端发言 message: {type:say, to_client_id:xx, content:xx}
             case 'say':
-                // 非法请求
+                // 非法请求$client_id === Context::$client_id
                 if(!isset($_SESSION['room_id']))
                 {
                     throw new \Exception("\$_SESSION['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
@@ -122,7 +120,7 @@ class Events
                 {
                     $new_message = array(
                         'type'=>'say',
-                        'from_client_id'=>$client_id, 
+                        'from_client_id'=>$client_id,
                         'from_client_name' =>$client_name,
                         'to_client_id'=>$message_data['to_client_id'],
                         'client_photo'=>$client_photo,
@@ -135,7 +133,7 @@ class Events
                 }
                 
                 $new_message = array(
-                    'type'=>'say', 
+                    'type'=>'say',
                     'from_client_id'=>$client_id,
                     'from_client_name' =>$client_name,
                     'to_client_id'=>'all',
@@ -155,12 +153,13 @@ class Events
    {
        // debug
        echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id onClose:''\n";
-       
+       $client_photo = self::$after_users[$client_id]['photo'];
        // 从房间的客户端列表中删除
        if(isset($_SESSION['room_id']))
        {
            $room_id = $_SESSION['room_id'];
-           $new_message = array('type'=>'logout', 'from_client_id'=>$client_id, 'from_client_name'=>$_SESSION['client_name'], 'time'=>date('Y-m-d H:i:s'));
+           $new_message = array(                        'client_photo'=>$client_photo,
+               'type'=>'logout', 'from_client_id'=>$client_id, 'from_client_name'=>$_SESSION['client_name'], 'time'=>date('Y-m-d H:i:s'));
            Gateway::sendToGroup($room_id, json_encode($new_message));
        }
    }

@@ -11,10 +11,11 @@
   <script type="text/javascript" src="/js/web_socket.js"></script>
   <script type="text/javascript" src="/js/jquery.min.js"></script>
 
-  <script type="text/javascript">
+    <script type="text/javascript">
     WEB_SOCKET_SWF_LOCATION = "/swf/WebSocketMain.swf";
     WEB_SOCKET_DEBUG = true;
     var ws, name, client_list={};
+    var current_id;
 
 
 //    var c=document.getElementById("myCanvas");
@@ -63,27 +64,28 @@
             case 'login':
 
                 //{"type":"login","client_id":xxx,"client_name":"xxx","client_list":"[...]","time":"xxx"}
-                say(data['client_id'], data['client_name'],  data['client_name']+' 加入了聊天室', data['time'],data['client_photo']);
                 if(data['client_list'])
                 {
                     client_list = data['client_list'];
+                    current_id = data['client_id'];
                 }
                 else
                 {
                     client_list[data['client_id']] = data['client_name']; 
                 }
+                say(data['client_id'], data['client_name'],  data['client_name']+' 加入了聊天室', data['time'],data['client_photo'],data);
                 flush_client_list();
                 console.log(data['client_name']+"登录成功");
                 break;
             // 发言
             case 'say':
                 //{"type":"say","from_client_id":xxx,"to_client_id":"all/client_id","content":"xxx","time":"xxx"}
-                say(data['from_client_id'], data['from_client_name'], data['content'], data['time'],data['client_photo']);
+                say(data['from_client_id'], data['from_client_name'], data['content'], data['time'],data['client_photo'],data);
                 break;
             // 用户退出 更新用户列表
             case 'logout':
                 //{"type":"logout","client_id":xxx,"time":"xxx"}
-                say(data['from_client_id'], data['from_client_name'], data['from_client_name']+' 退出了', data['time']);
+                say(data['from_client_id'], data['from_client_name'], data['from_client_name']+' 退出了', data['time'],data['client_photo']);
                 delete client_list[data['from_client_id']];
                 flush_client_list();
         }
@@ -116,11 +118,21 @@
     }
 
     // 发言
-    function say(from_client_id, from_client_name, content, time,photo){
-    	$("#dialog").append('<div class="speech_item">' +
-            '<img style="width: 38px" src="'+photo+'" class="user_icon" /> '
-            +from_client_name+' <br> '+time+'<div style="clear:both;">' +
-            '</div><p class="triangle-isosceles top">'+content+'</p> </div>');
+    function say(from_client_id, from_client_name, content, time,photo,data){
+        console.log(from_client_id);
+        console.log(current_id);
+        if(current_id ==  from_client_id){
+            $("#dialog").append('<div class="speech_item">' +
+                '<div style="float: right"><img style="width: 38px;float: right;" src="'+photo+'" class="user_icon" /><em style="text-align: right;" class="text-overflow">'
+                +from_client_name+'<br>'+time+'</em></div><div style="clear:both;">' +
+                '</div><p class="triangle-isosceles right">'+content+'</p> </div>');
+        }else{
+            $("#dialog").append('<div class="speech_item">' +
+                '<img style="width: 38px" src="'+photo+'" class="user_icon" /> <em>'
+                +from_client_name+' <br> '+time+'</em><div style="clear:both;">' +
+                '</div><p class="triangle-isosceles top">'+content+'</p> </div>');
+        }
+
     }
 
 
@@ -131,6 +143,15 @@
 	    });
     });
   </script>
+    <script type="text/javascript">
+        document.onkeydown=function(event){
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if(e && e.keyCode==13){ // enter 键
+                //要做的事情
+                $(":submit").trigger('click');
+            }
+        };
+    </script>
 </head>
 <body onload="connect();">
     <div class="container">

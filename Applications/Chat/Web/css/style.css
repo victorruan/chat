@@ -10,7 +10,8 @@ body
 
 #dialog
 {
-	min-height:600px;
+    overflow-x: auto;
+    height: 600px;
 	background:#EEEEEE;
 }
 
@@ -22,7 +23,8 @@ body
 
 #userlist
 {
-	min-height:600px;
+    overflow-x: auto;
+    height: 600px;
 	background:#EEEEEE;
 }
 
@@ -49,7 +51,7 @@ body
 .triangle-isosceles {
     position:relative;
     padding:10px;
-    margin:10px 0 15px;
+    margin:10px 0 14px;
     color:#000;
     background:#D3FF93; /* default background for browsers without gradient support */
     background:-webkit-gradient(linear, 0 0, 0 100%, from(#EFFFD7), to(#D3FF93));
@@ -64,13 +66,6 @@ body
      box-shadow:1px 1px 2px hsla(0, 0%, 0%, 0.3);  
 }
 
-    .triangle-isosceles:hover{  
-        top:-2px;  
-        left:-2px;  
-        -moz-box-shadow:3px 3px 2px hsla(0, 0%, 0%, 0.3);  
-        -webkit-box-shadow:3px 3px 2px hsla(0, 0%, 0%, 0.3);  
-        box-shadow:3px 3px 2x hsla(0, 0%, 0%, 0.3);  
-    }  
 
 .triangle-isosceles.top {
     background:-webkit-gradient(linear, 0 0, 0 100%, from(#D3FF93), to(#EFFFD7));
@@ -79,6 +74,12 @@ body
     background:linear-gradient(#D3FF93, #EFFFD7);
 }
 
+.triangle-isosceles.right {
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#07d6d6), to(#666fde));
+    background:-moz-linear-gradient(#07d6d6, #666fde);
+    background:-o-linear-gradient(#07d6d6, #666fde);
+    background:linear-gradient(#07d6d6, #666fde)
+}
 .triangle-isosceles:after {
     content:"";
     position:absolute;
@@ -91,11 +92,20 @@ body
     width:0;
 }
 .triangle-isosceles.top:after {
-    top:-9px;
+    top:-8px;
     left:15px;
     bottom:auto;
     border-width:0 9px 9px;
     border-color:#D3FF93 transparent;
+}
+
+.triangle-isosceles.right:after {
+    top: -9px;
+    left: inherit;
+    right: 15px;
+    bottom: auto;
+    border-width: 0 9px 9px;
+    border-color: #07d6d6 transparent;
 }
 
 .user_icon
@@ -113,4 +123,13 @@ body
 .thumbnail
 {
 	border:1px solid #CCCCCC;
+}
+
+.text-overflow{
+    display:block;                     /*内联对象需加*/
+    width:31em;
+    word-break:keep-all;           /* 不换行 */
+    white-space:nowrap;          /* 不换行 */
+    overflow:hidden;               /* 内容超出宽度时隐藏超出部分的内容 */
+    text-overflow:ellipsis;         /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
 }
