@@ -113,9 +113,10 @@ class Register extends Worker
         Timer::del($connection->timeout_timerid);
         $data       = @json_decode($buffer, true);
         if (empty($data['event'])) {
-            $error = "Bad request for Gegister service. If you are a client please connect Gateway. Request info(IP:".$connection->getRemoteIp().", Request Buffer:$buffer)\n";
+            $error = "Bad request for Register service. If you are a client please connect Gateway. Request info(IP:".$connection->getRemoteIp().", Request Buffer:$buffer)\n";
             echo $error;
-            return $connection->close($error);
+            $connection->close($error);
+            return;
         }
         $event      = $data['event'];
         $secret_key = isset($data['secret_key']) ? $data['secret_key'] : '';
@@ -125,11 +126,13 @@ class Register extends Worker
             case 'gateway_connect':
                 if (empty($data['address'])) {
                     echo "address not found\n";
-                    return $connection->close();
+                    $connection->close();
+                    return;
                 }
                 if ($secret_key !== $this->secretKey) {
                     echo "Register: Key does not match $secret_key !== {$this->secretKey}\n";
-                    return $connection->close();
+                    $connection->close();
+                    return;
                 }
                 $this->_gatewayConnections[$connection->id] = $data['address'];
                 $this->broadcastAddresses();
@@ -138,7 +141,8 @@ class Register extends Worker
             case 'worker_connect':
                 if ($secret_key !== $this->secretKey) {
                     echo "Register: Key does not match $secret_key !== {$this->secretKey}\n";
-                    return $connection->close();
+                    $connection->close();
+                    return;
                 }
                 $this->_workerConnections[$connection->id] = $connection;
                 $this->broadcastAddresses($connection);

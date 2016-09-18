@@ -53,7 +53,7 @@ class Gateway extends Worker
      *
      * @var string
      */
-    public $lanPort = '127.0.0.1';
+    public $lanPort = null;
 
     /**
      * gateway 内部通讯起始端口，每个 gateway 实例应该都不同，步长1000
@@ -387,6 +387,7 @@ class Gateway extends Worker
      */
     public static function routerBind($worker_connections, $client_connection, $cmd, $buffer)
     {
+        //分配worker给客户端连接
         if (!isset($client_connection->businessworker_address) || !isset($worker_connections[$client_connection->businessworker_address])) {
             $client_connection->businessworker_address = array_rand($worker_connections);
         }
