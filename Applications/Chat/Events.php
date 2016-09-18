@@ -138,7 +138,7 @@ class Events
                     'from_client_name' =>$client_name,
                     'to_client_id'=>'all',
                     'client_photo'=>$client_photo,
-                    'content'=>nl2br(htmlspecialchars($message_data['content'])),
+                    'content'=>nl2br(($message_data['content'])),
                     'time'=>date('Y-m-d H:i:s'),
                 );
                 return Gateway::sendToGroup($room_id ,json_encode($new_message));
