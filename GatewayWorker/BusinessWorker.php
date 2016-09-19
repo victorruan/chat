@@ -22,7 +22,6 @@ use GatewayWorker\Protocols\GatewayProtocol;
 use GatewayWorker\Lib\Context;
 
 /**
- *
  * BusinessWorker 用于处理Gateway转发来的数据
  *
  * @author walkor<walkor@workerman.net>
@@ -185,8 +184,8 @@ class BusinessWorker extends Worker
             class_alias('GatewayWorker\Protocols\GatewayProtocol', 'Protocols\GatewayProtocol');
         }
         $this->connectToRegister();
-        \GatewayWorker\Lib\Gateway::setBusinessWorker($this);
-        \GatewayWorker\Lib\Gateway::$secretKey = $this->secretKey;
+        Lib\Gateway::setBusinessWorker($this);
+        Lib\Gateway::$secretKey = $this->secretKey;
         if ($this->_onWorkerStart) {
             call_user_func($this->_onWorkerStart, $this);
         }

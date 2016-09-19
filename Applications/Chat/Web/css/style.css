@@ -133,3 +133,64 @@ body
     overflow:hidden;               /* 内容超出宽度时隐藏超出部分的内容 */
     text-overflow:ellipsis;         /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
 }
+#face_panel {
+    background: #fff;
+    bottom: -30px;
+    left: 0px;
+    margin-bottom: 80px;
+    overflow-y: hidden;
+    padding: 0;
+    width: 720px;
+    position: absolute;
+    height: 240px;
+    box-shadow: 0 0 6px rgba(94,89,89,.57);
+}
+#face_panel #choose_face {
+    border-width: 0;
+    width: 720px;
+    margin: 8px 0px;
+}
+#face_panel #choose_face {
+    zoom: 1;
+}
+#face_panel a {
+    border: 0;
+    padding: 4px;
+    height: 63px;
+    color: #6e747a;
+    text-align: center;
+    margin: 3px 1px;
+    width: 50px;
+}
+
+#choose_face a {
+    display: block;
+    float: left;
+    height: 76px;
+    width: 52px;
+}
+#sendEmojiIcon {
+    width: 50px;
+    height: 52px;
+    text-align: center;
+    font-size: 30px;
+    color: #787d82;
+    line-height: 52px;
+    display: block;
+    cursor: pointer;
+    overflow: hidden;
+    margin: 0;
+    position: relative;
+    z-index: 9;
+}
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

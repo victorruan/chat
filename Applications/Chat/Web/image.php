@@ -1,18 +1,8 @@
 <?php
-$client_id = $_GET['client_id'];
-\Workerman\Protocols\Http::header('Content-Type:image/jpeg');
-global $images;
-global $users;
-if((empty($images))or(!count($images)>0)){
-    $card_list = json_decode(file_get_contents("http://vgdb.ptbus.com/api/?s=card_list"),true)['result'];
-    array_walk($card_list,function($value,$key){
-        global $images;
-        $images[] = $value['icon'];
-    });
-}else{
-
+//\Workerman\Protocols\Http::header('Content-Type:application/json');
+$str = '{"\u5fae\u7b11":"http:\/\/www.imooc.com\/static\/img\/smiley\/1.png","\u4e0d":"http:\/\/www.imooc.com\/static\/img\/smiley\/2.png","\u4eb2\u4eb2":"http:\/\/www.imooc.com\/static\/img\/smiley\/3.png","\u65e0\u804a":"http:\/\/www.imooc.com\/static\/img\/smiley\/4.png","\u9f13\u638c":"http:\/\/www.imooc.com\/static\/img\/smiley\/5.png","\u4f24\u5fc3":"http:\/\/www.imooc.com\/static\/img\/smiley\/6.png","\u5bb3\u7f9e":"http:\/\/www.imooc.com\/static\/img\/smiley\/7.png","\u95ed\u5634":"http:\/\/www.imooc.com\/static\/img\/smiley\/8.png","\u800d\u9177":"http:\/\/www.imooc.com\/static\/img\/smiley\/9.png","\u65e0\u8bed":"http:\/\/www.imooc.com\/static\/img\/smiley\/10.png","\u53d1\u6012":"http:\/\/www.imooc.com\/static\/img\/smiley\/11.png","\u60ca\u8bb6":"http:\/\/www.imooc.com\/static\/img\/smiley\/12.png","\u59d4\u5c48":"http:\/\/www.imooc.com\/static\/img\/smiley\/13.png","\u9177":"http:\/\/www.imooc.com\/static\/img\/smiley\/14.png","\u6c57":"http:\/\/www.imooc.com\/static\/img\/smiley\/15.png","\u95ea":"http:\/\/www.imooc.com\/static\/img\/smiley\/16.png","\u653e\u5c41":"http:\/\/www.imooc.com\/static\/img\/smiley\/17.png","\u6d17\u6fa1":"http:\/\/www.imooc.com\/static\/img\/smiley\/18.png","\u5076\u8036":"http:\/\/www.imooc.com\/static\/img\/smiley\/19.png","\u56f0":"http:\/\/www.imooc.com\/static\/img\/smiley\/20.png","\u5492\u9a82":"http:\/\/www.imooc.com\/static\/img\/smiley\/21.png","\u7591\u95ee":"http:\/\/www.imooc.com\/static\/img\/smiley\/22.png","\u6655":"http:\/\/www.imooc.com\/static\/img\/smiley\/23.png","\u8870":"http:\/\/www.imooc.com\/static\/img\/smiley\/24.png","\u88c5\u9b3c":"http:\/\/www.imooc.com\/static\/img\/smiley\/25.png","\u53d7\u4f24":"http:\/\/www.imooc.com\/static\/img\/smiley\/26.png","\u518d\u89c1":"http:\/\/www.imooc.com\/static\/img\/smiley\/27.png","\u62a0\u9f3b":"http:\/\/www.imooc.com\/static\/img\/smiley\/28.png","\u5fc3\u5bd2":"http:\/\/www.imooc.com\/static\/img\/smiley\/29.png","\u6012":"http:\/\/www.imooc.com\/static\/img\/smiley\/30.png","\u51c4\u51c9":"http:\/\/www.imooc.com\/static\/img\/smiley\/31.png","\u6084\u6084":"http:\/\/www.imooc.com\/static\/img\/smiley\/32.png","\u594b\u6597":"http:\/\/www.imooc.com\/static\/img\/smiley\/33.png","\u54ed":"http:\/\/www.imooc.com\/static\/img\/smiley\/34.png","\u8d5e":"http:\/\/www.imooc.com\/static\/img\/smiley\/35.png","\u5f00\u5fc3":"http:\/\/www.imooc.com\/static\/img\/smiley\/36.png"}';
+$arr = json_decode($str);
+foreach($arr as $k => $v){
+    $face[] = ['title'=>$k,'image'=>$v];
 }
-if(!isset($users[$client_id]['photo'])){
-    $users[$client_id]['photo'] = file_get_contents($images[array_rand($images,1)]);
-}
-echo $users[$client_id]['photo'];
+echo json_encode($face);

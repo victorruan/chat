@@ -7,9 +7,11 @@
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/style.css" rel="stylesheet">
   <!-- Include these three JS files: -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/vue/1.0.26/vue.min.js"></script>
+  <script src="//cdn.bootcss.com/vue-resource/0.9.3/vue-resource.min.js"></script>
   <script type="text/javascript" src="/js/swfobject.js"></script>
   <script type="text/javascript" src="/js/web_socket.js"></script>
-  <script type="text/javascript" src="/js/jquery.min.js"></script>
 
     <script type="text/javascript">
     WEB_SOCKET_SWF_LOCATION = "/swf/WebSocketMain.swf";
@@ -119,8 +121,7 @@
 
     // 发言
     function say(from_client_id, from_client_name, content, time,photo,data){
-        console.log(from_client_id);
-        console.log(current_id);
+//        console.log(current_id);
         if(current_id ==  from_client_id){
             $("#dialog").append('<div class="speech_item">' +
                 '<div style="float: right"><img style="width: 38px;float: right;" src="'+photo+'" class="user_icon" /><em style="text-align: right;" class="text-overflow">'
@@ -156,7 +157,8 @@
         };
     </script>
 </head>
-<body onload="connect();">
+<body onload="connect();" id="app">
+
     <div class="container">
 	    <div class="row clearfix">
             <div class="col-sm-4 column">
@@ -168,21 +170,60 @@
 	           <div class="thumbnail">
 	               <div class="caption" id="dialog"></div>
 	           </div>
-	           <form onsubmit="onSubmit(); return false;">
-	                <select style="margin-bottom:8px" id="client_list">
-                        <option value="all">所有人</option>
-                    </select>
-                    <textarea class="textarea thumbnail" id="textarea"></textarea>
-                    <div class="say-btn"><input type="submit" class="btn btn-default" value="发表" /></div>
-               </form>
-               <div>
-               &nbsp;&nbsp;&nbsp;&nbsp;<b>房间列表:</b>（当前在&nbsp;房间<?php echo isset($_GET['room_id'])&&intval($_GET['room_id'])>0 ? intval($_GET['room_id']):1; ?>）<br>
-               &nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=1">房间1</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=2">房间2</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=3">房间3</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=4">房间4</a>
-               <br><br>
-               </div>
 	        </div>
+            <div class="col-sm-4 column">
+
+            </div>
+            <div class="col-sm-8 column">
+                <div class="thumbnail">
+                    <form onsubmit="onSubmit(); return false;">
+                        <select style="margin-bottom:8px" id="client_list">
+                            <option value="all">所有人</option>
+                        </select>
+                        <input type="button" class="btn btn-default" value="表情" @click="face_panel" />
+                        <textarea class="textarea thumbnail" id="textarea"></textarea>
+                        <div class="say-btn"><input type="submit" class="btn btn-default" value="发表" /></div>
+                    </form>
+                    <div id="face_panel" v-show="face_panel_show">
+                        <div id="choose_face">
+                            <template  v-for="face of faces">
+                                <a title="[{{face.title}}]" href="javascript:;" @click="send_face(face.title)">
+                                    <img class="ph_face_s" src="{{face.image}}"><p>{{face.title}}</p>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 	    </div>
     </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data:{
+                faces:[],
+                face_panel_show:false
+            },
+            methods: {
+                send_face: function (title) {
+                    var to_client_id = $("#client_list option:selected").attr("value");
+                    var to_client_name = $("#client_list option:selected").text();
+                    ws.send('{"type":"send_face","to_client_id":"'+to_client_id+'","to_client_name":"'+to_client_name+'","content":"'+title+'"}');
+                    this.face_panel_show = !this.face_panel_show;
+                },
+                face_panel:function(){
+                    this.face_panel_show = !this.face_panel_show;
+                }
+            },
+            ready() {
+                this.$http.get('/image.php').then(function(response) {
+                    this.$set('faces', response.json());
+                }, function(response) {
+                    console.log('fail');
+                });
+            }
+        })
+    </script>
 </body>
 </html>

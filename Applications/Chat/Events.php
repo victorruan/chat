@@ -29,8 +29,10 @@ class Events
 {
     static $init_users;//待使用的用户信息
     static $after_users;
+    static $faces;//表情数组
     public static function onWorkerStart($businessWorker){
        self::init();
+       self::init_faces();
     }
 
     public static function init(){
@@ -41,6 +43,13 @@ class Events
             });
         }
 //        var_dump(self::$init_users);
+    }
+
+    public static function init_faces(){
+        if(empty(self::$faces)or(!count(self::$faces)>0)){
+            $str = '{"\u5fae\u7b11":"http:\/\/www.imooc.com\/static\/img\/smiley\/1.png","\u4e0d":"http:\/\/www.imooc.com\/static\/img\/smiley\/2.png","\u4eb2\u4eb2":"http:\/\/www.imooc.com\/static\/img\/smiley\/3.png","\u65e0\u804a":"http:\/\/www.imooc.com\/static\/img\/smiley\/4.png","\u9f13\u638c":"http:\/\/www.imooc.com\/static\/img\/smiley\/5.png","\u4f24\u5fc3":"http:\/\/www.imooc.com\/static\/img\/smiley\/6.png","\u5bb3\u7f9e":"http:\/\/www.imooc.com\/static\/img\/smiley\/7.png","\u95ed\u5634":"http:\/\/www.imooc.com\/static\/img\/smiley\/8.png","\u800d\u9177":"http:\/\/www.imooc.com\/static\/img\/smiley\/9.png","\u65e0\u8bed":"http:\/\/www.imooc.com\/static\/img\/smiley\/10.png","\u53d1\u6012":"http:\/\/www.imooc.com\/static\/img\/smiley\/11.png","\u60ca\u8bb6":"http:\/\/www.imooc.com\/static\/img\/smiley\/12.png","\u59d4\u5c48":"http:\/\/www.imooc.com\/static\/img\/smiley\/13.png","\u9177":"http:\/\/www.imooc.com\/static\/img\/smiley\/14.png","\u6c57":"http:\/\/www.imooc.com\/static\/img\/smiley\/15.png","\u95ea":"http:\/\/www.imooc.com\/static\/img\/smiley\/16.png","\u653e\u5c41":"http:\/\/www.imooc.com\/static\/img\/smiley\/17.png","\u6d17\u6fa1":"http:\/\/www.imooc.com\/static\/img\/smiley\/18.png","\u5076\u8036":"http:\/\/www.imooc.com\/static\/img\/smiley\/19.png","\u56f0":"http:\/\/www.imooc.com\/static\/img\/smiley\/20.png","\u5492\u9a82":"http:\/\/www.imooc.com\/static\/img\/smiley\/21.png","\u7591\u95ee":"http:\/\/www.imooc.com\/static\/img\/smiley\/22.png","\u6655":"http:\/\/www.imooc.com\/static\/img\/smiley\/23.png","\u8870":"http:\/\/www.imooc.com\/static\/img\/smiley\/24.png","\u88c5\u9b3c":"http:\/\/www.imooc.com\/static\/img\/smiley\/25.png","\u53d7\u4f24":"http:\/\/www.imooc.com\/static\/img\/smiley\/26.png","\u518d\u89c1":"http:\/\/www.imooc.com\/static\/img\/smiley\/27.png","\u62a0\u9f3b":"http:\/\/www.imooc.com\/static\/img\/smiley\/28.png","\u5fc3\u5bd2":"http:\/\/www.imooc.com\/static\/img\/smiley\/29.png","\u6012":"http:\/\/www.imooc.com\/static\/img\/smiley\/30.png","\u51c4\u51c9":"http:\/\/www.imooc.com\/static\/img\/smiley\/31.png","\u6084\u6084":"http:\/\/www.imooc.com\/static\/img\/smiley\/32.png","\u594b\u6597":"http:\/\/www.imooc.com\/static\/img\/smiley\/33.png","\u54ed":"http:\/\/www.imooc.com\/static\/img\/smiley\/34.png","\u8d5e":"http:\/\/www.imooc.com\/static\/img\/smiley\/35.png","\u5f00\u5fc3":"http:\/\/www.imooc.com\/static\/img\/smiley\/36.png"}';
+            self::$faces = json_decode($str,true);
+        }
     }
 
     public static function login($client_id){
@@ -139,6 +148,46 @@ class Events
                     'to_client_id'=>'all',
                     'client_photo'=>$client_photo,
                     'content'=>nl2br(htmlspecialchars($message_data['content'])),
+                    'time'=>date('Y-m-d H:i:s'),
+                );
+                return Gateway::sendToGroup($room_id ,json_encode($new_message));
+            case 'send_face':
+                // 非法请求$client_id === Context::$client_id
+                if(!isset($_SESSION['room_id']))
+                {
+                    throw new \Exception("\$_SESSION['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                }
+                $room_id = $_SESSION['room_id'];
+                $client_name = $_SESSION['client_name'];
+                $client_photo = $_SESSION['client_photo'];
+
+                if(($message_data['content'])){
+                    $message_data['content'] = '<img src="'.self::$faces[$message_data['content']].'">';
+                }
+                // 私聊
+                if($message_data['to_client_id'] != 'all')
+                {
+                    $new_message = array(
+                        'type'=>'say',
+                        'from_client_id'=>$client_id,
+                        'from_client_name' =>$client_name,
+                        'to_client_id'=>$message_data['to_client_id'],
+                        'client_photo'=>$client_photo,
+                        'content'=>"<b>对你说: </b>".nl2br(($message_data['content'])),
+                        'time'=>date('Y-m-d H:i:s'),
+                    );
+                    Gateway::sendToClient($message_data['to_client_id'], json_encode($new_message));
+                    $new_message['content'] = "<b>你对".($message_data['to_client_name'])."说: </b>".nl2br(($message_data['content']));
+                    return Gateway::sendToCurrentClient(json_encode($new_message));
+                }
+
+                $new_message = array(
+                    'type'=>'say',
+                    'from_client_id'=>$client_id,
+                    'from_client_name' =>$client_name,
+                    'to_client_id'=>'all',
+                    'client_photo'=>$client_photo,
+                    'content'=>nl2br(($message_data['content'])),
                     'time'=>date('Y-m-d H:i:s'),
                 );
                 return Gateway::sendToGroup($room_id ,json_encode($new_message));
